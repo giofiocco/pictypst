@@ -133,8 +133,8 @@
 /// This function renders code from a subset of roff's module PIC
 #let pic(
   /// the PIC code
-  /// -> raw
-  code) = {
+  /// -> str
+  code, debug:false) = {
   let statements = ()
   let tokens = ()
   while code.len() > 0 {
@@ -244,8 +244,10 @@
     let history = (box:(), arrow:())
 
     for (i,st) in statements.enumerate() {
-      circle((x,y), radius:1pt, fill:red, stroke:none)
-      content((x,y), text(7pt)[#i], anchor:"south-west", anchor-sep:10pt)
+      if debug {
+        circle((x,y), radius:1pt, fill:red, stroke:none)
+        content((x,y), text(7pt)[#i], anchor:"south-west", anchor-sep:10pt)
+      }
 
       let (dirx, diry) = dirs-delta(dir)
       let (w,h) = (
@@ -337,7 +339,9 @@
     content((-1,0), [#labels], anchor:"east")
   }))
 
-  [#statements]
+  if debug {
+    [#statements]
+  }
 }
 
 
