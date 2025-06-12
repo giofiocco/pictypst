@@ -1,8 +1,9 @@
 #import "PIC.typ": pic, read_roff_file
 
-#let code = read_roff_file("test.roff")
+#let files-count = 14
 
-#for i in range(14 + 1) {
+#let code = read_roff_file("test.roff")
+#for i in range(files-count + 1) {
   stack(dir:ltr, spacing:1fr,
     code.at(i),
     figure(image("images/test-" + str(i) + ".png"))
