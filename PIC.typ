@@ -134,7 +134,10 @@
 #let pic(
   /// the PIC code
   /// -> str
-  code, debug:false) = {
+  code,
+  /// enable debugging info
+  /// -> bool
+  debug:false) = {
   let statements = ()
   let tokens = ()
   while code.len() > 0 {
@@ -346,6 +349,12 @@
   }
 }
 
-
-#let read_roff_file(path) = read(path).matches(regex("(?s:\.PS\s*\n(.*?)\.PE)")).map(x => x.at("captures").at(0))
+/// Returns an array of strings containing the .PS ... .PE content of a roff file
+///
+/// -> (str)
+#let read_roff_file(
+  /// path of the file
+  /// -> str
+  path
+) = read(path).matches(regex("(?s:\.PS\s*\n(.*?)\.PE)")).map(x => x.at("captures").at(0))
 

@@ -1,12 +1,15 @@
 #import "PIC.typ": pic, read_roff_file
 
-#figure(block(
-  stroke: .5pt,
-  inset: (x: -7cm, top:-1cm, bottom: -20cm),
-  clip: true,
-  image("test-0.png")
-))
-#pic(read_roff_file("test.roff").at(0), debug:true)
+#let code = read_roff_file("test.roff")
+
+#for i in range(14 + 1) {
+  stack(dir:ltr, spacing:1fr,
+    code.at(i),
+    figure(image("images/test-" + str(i) + ".png"))
+  )
+  pic(code.at(i), debug:true)
+  line(length:100%, stroke:.5pt)
+}
 
 *Objects* are _box_, _line_, _arrow_, _circle_, _ellipse_, _arc_, _splines_ and _block composition_.
 Box, circle and ellipse are *closed*; lines, arrow, arc and splines are *open*.
