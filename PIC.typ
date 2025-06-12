@@ -336,7 +336,9 @@
       anchor = dir-anchor(dir)
     }
 
-    content((-1,0), [#labels], anchor:"east")
+    if debug {
+      content((-1,0), [#labels], anchor:"east")
+    }
   }))
 
   if debug {
