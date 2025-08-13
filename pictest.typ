@@ -1,14 +1,16 @@
 #import "PIC.typ": pic, read_roff_file
+#import "@preview/codly:1.3.0": *
+#import "@preview/codly-languages:0.1.1": *
 
 #let files-count = 14
 
 #let code = read_roff_file("test.roff")
 #for i in range(files-count + 1) {
   stack(dir:ltr, spacing:1fr,
-    code.at(i),
+    raw(code.at(i)),
     figure(image("images/test-" + str(i) + ".png"))
   )
-  pic(code.at(i), debug:true)
+  pic(code.at(i))
   line(length:100%, stroke:.5pt)
 }
 
