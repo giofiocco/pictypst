@@ -3,81 +3,103 @@
 #let primitives = ("box", "circle", "ellipse", "arc", "line", "arrow", "spline", "move")
 #let dirs = ("up", "down", "left", "right")
 
-#let parse-expr(code) = {
-  return (0, (:))
+#let drop(code, len) = code.slice(len).trim()
+
+#let parse-direction(code) = {
+  for dir in dirs {
+    if code.starts-with(dir) {
+      return (drop(code, dir.len()), dir)
+    }
+  }
+  (code, "")
+}
+
+#let parse-primitive(code) = {
+  for primitive in primitives {
+    if code.starts-with(primitive) {
+      return (drop(code, primitive.len()), primitive)
+    }
+  }
+  (code, "")
+}
+
+#let parse-label(code) = {
+  let m = code.match(regex("^([a-zA-Z]+):"))
+  if m != none {
+    let label = m.captures.at(0)
+    return (drop(code, label.len()+1), label)
+  }
+  (code, "")
+}
+
+#let parse-command(code) = {
+  let cmd = (cmd:"")
+
+  let label = ""
+  (code, label) = parse-label(code)
+  if label != "" {
+    cmd.insert("label", label)
+  }
+
+  let primitive = ""
+  (code, primitive) = parse-primitive(code)
+  if primitive == "" {
+    let dir = ""
+    (code, dir) = parse-direction(code)
+    if dir == "" {
+      return (code, none)
+    }
+    primitive = dir
+  }
+  cmd.cmd = primitive
+
+  let direction = ""
+  let dir = ()
+  (code, direction) = parse-direction(code)
+  while direction != "" {
+    dir.push(direction)
+    (code, direction) = parse-direction(code)
+  }
+  if dir.len() > 0 {
+    cmd.insert("dir", dir)
+  }
+
+  (code, cmd)
+}
+
+#let parse-statement(code) = {
+  if code.starts-with(";") {
+    code = drop(code, 1)
+  }
+  parse-command(code)
 }
 
 #let parse(code) = {
   let statements = ()
-
-  let commands = code.split(regex("[\n;]")).filter(x => x.len() > 0)
-  for command in commands {
-    let statement = (cmd:"none", text:())
-    command = command.trim()
-
-    let m = command.match(regex("^([a-zA-Z]+):(.*)$"))
-    if m != none {
-      statement.insert("label", m.captures.at(0))
-      command = m.captures.at(1).trim()
-    }
-
-    for primitive in primitives {
-      if command.starts-with(primitive) {
-        statement.cmd = primitive
-        command = command.slice(primitive.len()).trim()
-
-        while command.len() > 0 {
-          if command.starts-with("height") {
-            statement.insert("H", true)
-            command = command.slice(6).trim()
-
-          } else if command.starts-with("width") {
-            statement.insert("W", true)
-            command = command.slice(6).trim()
-
-          } else if command.starts-with("dashed") {
-            statement.insert("dashed", true)
-            command = command.slice(6).trim()
-
-          } else if command.match("^\".*?\"") != none {
-            let m = command.match("^\"(.*?)\"(.*)$")
-            if m != none {
-              statement.text.push(m.captures.at(0))
-              command = m.captures.at(1).trim()
-            } else {
-              panic()
-            }
-
-          } else {
-            break
-          }
-        }
-
-        break
-      }
-    }
-
-    if statement.cmd == "none" {
-      for dir in dirs {
-        if command.starts-with(dir) {
-          statement.cmd = dir
-          command = command.slice(dir.len()).trim()
-          break
-        }
-      }
-    }
-
-    if command.len() > 0 {
-      statement.insert("rest", command)
-    }
-    statements.push(statement)
+  let st = (:)
+  while st != none and code.len() > 0 {
+    (code, st) = parse-statement(code)
+    statements.push(st)
   }
-
-  return statements
+  statements.push((rest:code))
+  statements
 }
 
-#let pic(code) = {
-  [#parse(code)]
+#let pic(code, debug:false) = {
+  let commands = parse(code)
+
+  let (boxw, boxh) = (1.5,1)
+  let (x,y) = (0,0)
+
+  figure(canvas({
+    import draw:*
+    stroke(.5pt)
+
+    for command in commands {
+    }
+  }))
+
+  [#commands]
 }
 
 #let read_roff_file(path) = read(path).matches(regex("(?s:\.PS\s*\n(.*?)\.PE)")).map(x => x.at("captures").at(0))

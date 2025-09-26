@@ -8,7 +8,7 @@
 #for i in range(files-count + 1) {
   stack(dir:ltr, spacing:1fr,
     raw(code.at(i)),
-    figure(image("images/test-" + str(i) + ".png"))
+    figure(image("images/test-" + str(i) + ".png", width:25%))
   )
   pic(code.at(i))
   line(length:100%, stroke:.5pt)

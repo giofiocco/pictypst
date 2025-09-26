@@ -21,7 +21,7 @@ while (<$file>) {
     printf "$body\n";
     $body =~ s/"/\\"/g;
     $body =~ s/\n/\\n/g;
-    system "printf \".PS\n$body.PE\" | groff -p -ms -Tps | magick -density 200 - -trim $filename";
+    system "printf \".PS\n$body.PE\" | groff -p -ms -Tps | magick -density 100 - -trim $filename";
     $i += 1;
 
     $collect = 0;
